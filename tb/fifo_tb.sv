@@ -7,26 +7,13 @@ module fifo_tb;
 
 	//signals
 	logic clk, rst;
-	logic [WIDTH-1:0] wdata;
-	logic wr_en;
-	logic	full_flag;
-	logic [WIDTH-1:0] rdata;
-	logic rd_en;
-	logic	empty_flag;
+    fifo_if #(.WIDTH(WIDTH), .DEPTH(DEPTH)) fifo_intf();
 
 	//instantiating the DUT
-	fifo #(
-		.WIDTH(WIDTH),
-		.DEPTH(DEPTH)
-	) fifo_dut (
+	fifo #(.WIDTH(WIDTH), .DEPTH(DEPTH)) f1 (
 		.clk(clk),
 		.rst(rst),
-		.wdata(wdata),
-		.wr_en(wr_en),
-		.full_flag(full_flag),
-		.rdata(rdata),
-		.rd_en(rd_en),
-		.empty_flag(empty_flag)
+		.fifo_intf(fifo_intf)
 	);
 
 	//clock generation
@@ -40,9 +27,9 @@ module fifo_tb;
 		rst   = 1;
 		#5
 		rst   = 0; //reset triggered
-		wr_en = 0;
-		rd_en = 0;
-		wdata = 0;
+		fifo_intf.tb.wr_en = 0;
+		fifo_intf.tb.rd_en = 0;
+		fifo_intf.tb.wdata = 0;
 		#5
 		rst = 1;
 	end
@@ -56,67 +43,67 @@ module fifo_tb;
 		//write sample data
 		for (int i = 0; i < 256; i+=32) begin
 			@(posedge clk);
-			wdata = sample[(9'd255-i)-:32];
-			wr_en = 1'b1;
+			fifo_intf.tb.wdata = sample[(9'd255-i)-:32];
+			fifo_intf.tb.wr_en = 1'b1;
 		end
 		@(posedge clk);
-		wr_en = 1'b0;
+		fifo_intf.tb.wr_en = 1'b0;
 
 		// Try writing two more words to test full
     @(posedge clk);
-    wr_en = 1;
-    wdata = 32'hbabababa;
+    fifo_intf.tb.wr_en = 1;
+    fifo_intf.tb.wdata = 32'hbabababa;
     @(posedge clk);
-    wr_en = 0;
+    fifo_intf.tb.wr_en = 0;
 
     // Read all data
     for (int i = 0; i < DEPTH; i++) begin
       @(posedge clk);
-      rd_en = 1;
+      fifo_intf.tb.rd_en = 1;
     end
     @(posedge clk);
-    rd_en = 0;
+    fifo_intf.tb.rd_en = 0;
 
     // Try reading one more to test empty
     @(posedge clk);
-    rd_en = 1;
+    fifo_intf.tb.rd_en = 1;
     @(posedge clk);
-    rd_en = 0;
+    fifo_intf.tb.rd_en = 0;
     @(posedge clk);
 
 
 		//TEST 2 - RESET
 		//write sample data
 		@(posedge clk);
-    wdata = 32'h76543210;
-    wr_en = 1'b1;
+    fifo_intf.tb.wdata = 32'h76543210;
+    fifo_intf.tb.wr_en = 1'b1;
     @(posedge clk);
     rst = 0;
-    wdata = {32{1'b1}};
+    fifo_intf.tb.wdata = {32{1'b1}};
     @(posedge clk);
     rst = 1;
-    wr_en = 1; // wr_en reset
-    wdata = 32'h89ABCDEF;
-		@(posedge clk);
-		wr_en = 1'b0;
+    fifo_intf.tb.wr_en = 1; // fifo_intf.wr_en reset
+    fifo_intf.tb.wdata = 32'h89ABCDEF;
+      @(posedge clk);
+      fifo_intf.tb.wr_en = 1'b0;
 
     // Read all data
     for (int i = 0; i < DEPTH; i++) begin
       @(posedge clk);
-      rd_en = 1;
+      fifo_intf.tb.rd_en = 1;
     end
     @(posedge clk);
-    rd_en = 0;
+    fifo_intf.tb.rd_en = 0;
     @(posedge clk);
     rst = 0;
     @(posedge clk);
     // Read data after reset
     for (int i = 0; i < DEPTH; i++) begin
       @(posedge clk);
-      rd_en = 1;
+      fifo_intf.tb.rd_en = 1;
     end
     @(posedge clk);
-    rd_en = 0;
+    fifo_intf.tb.rd_en = 0;
     @(posedge clk);
 
 		$finish;
@@ -124,10 +111,10 @@ module fifo_tb;
 
   // Monitor
   always @(posedge clk) begin
-    if (wr_en && !full_flag) begin
-      $monitor("Write: %0h, empty_flag=%b, full_flag=%b", wdata, empty_flag, full_flag);
-    end if (rd_en && !empty_flag) begin
-      $monitor("Read: %0h, empty_flag=%b, full_flag=%b", rdata, empty_flag, full_flag);
+    if (fifo_intf.tb.wr_en && !fifo_intf.tb.full_flag) begin
+      $monitor("Write: %0h, empty_flag=%b, full_flag=%b", fifo_intf.tb.wdata, fifo_intf.tb.empty_flag, fifo_intf.tb.full_flag);
+    end if (fifo_intf.tb.rd_en && !fifo_intf.tb.empty_flag) begin
+      $monitor("Read: %0h, empty_flag=%b, full_flag=%b", fifo_intf.tb.rdata, fifo_intf.tb.empty_flag, fifo_intf.tb.full_flag);
     end
   end
 
