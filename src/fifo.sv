@@ -3,7 +3,9 @@ interface fifo_if#(
 	parameter WIDTH = 32, //no. of bits the FIFO can hold
 	parameter DEPTH = 8  //how many words the FIFO can store
 );
-  //ports
+  //clock and reset
+  logic clk;
+  logic rst; // asynchronous active low
   //write
   logic [WIDTH-1:0] wdata;
   logic				wr_en;
@@ -13,8 +15,8 @@ interface fifo_if#(
   logic				rd_en;
   logic				empty_flag;
 
-  modport dut (input wdata, input wr_en, output full_flag, output rdata, input rd_en, output empty_flag);
-  modport tb  (output wdata, output wr_en, input full_flag, input rdata, output rd_en, input empty_flag);
+  modport dut (input clk, input rst, input wdata, input wr_en, output full_flag, output rdata, input rd_en, output empty_flag);
+  modport tb  (output clk, output rst, output wdata, output wr_en, input full_flag, input rdata, output rd_en, input empty_flag);
 
 endinterface
 
@@ -22,18 +24,13 @@ module fifo #(
   parameter WIDTH = 32,
   parameter DEPTH = 8
 )(
-	//ports
-	//clock and reset
-	input  logic clk,
-	input  logic rst, // asynchronous active low
-    fifo_if.dut fifo_intf
+	fifo_if.dut fifo_intf
 );
 	//Timescale
 	timeunit 10ns; timeprecision 100ps;
 
 	//local parameters and signals
-    localparam ADDR_WIDTH = $clog2(DEPTH); //sythesizable since 
-																				 // fifo_intf.DEPTH is fixed
+    localparam ADDR_WIDTH = $clog2(DEPTH); //sythesizable since fifo_intf.DEPTH is fixed
 	logic [ADDR_WIDTH-1:0] rptr, wptr;
 	logic full, empty;
 	logic last_op; // 0 -> write, 1 -> read
@@ -42,8 +39,8 @@ module fifo #(
     logic [WIDTH-1:0] mem [0:DEPTH-1];
 
 	//Write Operation
-	always_ff @(posedge clk or negedge rst) begin
-		if (!rst) begin
+	always_ff @(posedge fifo_intf.clk or negedge fifo_intf.rst) begin
+		if (!fifo_intf.rst) begin
 			wptr <= 0;
 		end else begin
 			if (fifo_intf.wr_en && !full) begin
@@ -55,8 +52,8 @@ module fifo #(
 	end
 
 	//Read Operation
-	always_ff @(posedge clk or negedge rst) begin
-		if (!rst) begin
+	always_ff @(posedge fifo_intf.clk or negedge fifo_intf.rst) begin
+		if (!fifo_intf.rst) begin
 			rptr <= 0;
 		end else begin
 			if (fifo_intf.rd_en && !empty) begin
@@ -69,8 +66,8 @@ module fifo #(
 
 	//Tracking what the last operation was to determine if FIFO 
 	//is empty or full (in both cases rptr =  wptr)
-	always_ff @(posedge clk or negedge rst) begin
-		if (!rst) begin
+	always_ff @(posedge fifo_intf.clk or negedge fifo_intf.rst) begin
+		if (!fifo_intf.rst) begin
 			last_op <= 1'b1;
 		end else begin
 			if (fifo_intf.rd_en && !empty) begin
