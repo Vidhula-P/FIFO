@@ -27,12 +27,11 @@ class fifo_driver extends uvm_driver #(fifo_transaction);
       `uvm_info("DRIVER","Request next sequence", UVM_FULL)
       seq_item_port.get_next_item(req);
       `uvm_info("DRIVER","Get next sequence", UVM_FULL)
-      
-      req.op = FIFO_IDLE;
 
       // Wiggle pins of DUT
       case (req.op)
     	FIFO_WRITE: begin
+          `uvm_info("DRIVER","in FIFO_WRITE", UVM_FULL)
           if (!dut_vif.full_flag) begin
             dut_vif.wdata = req.wdata;
       	    dut_vif.wr_en = 1'b1;
@@ -43,6 +42,7 @@ class fifo_driver extends uvm_driver #(fifo_transaction);
       	end
 
         FIFO_READ: begin
+          `uvm_info("DRIVER","in FIFO_READ", UVM_FULL)
           if (!dut_vif.empty_flag) begin
       	    dut_vif.wr_en = 1'b0;
       	    dut_vif.rd_en = 1'b1;
@@ -52,7 +52,7 @@ class fifo_driver extends uvm_driver #(fifo_transaction);
     	end
 
       	FIFO_IDLE: begin
-          `uvm_info("DRIVER","in IDLE", UVM_FULL)
+          `uvm_info("DRIVER","in FIFO_IDLE", UVM_FULL)
 		  dut_vif.wr_en = 1'b0;
 		  dut_vif.rd_en = 1'b0;
       	end
@@ -61,6 +61,8 @@ class fifo_driver extends uvm_driver #(fifo_transaction);
       @(posedge dut_vif.clk);
       seq_item_port.item_done();
       `uvm_info("DRIVER","Done with sequence", UVM_FULL)
+      dut_vif.wr_en = 1'b0;
+	    dut_vif.rd_en = 1'b0;
     end
   endtask
 

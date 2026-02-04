@@ -1,4 +1,4 @@
-typedef enum { FIFO_WRITE, FIFO_READ, FIFO_IDLE } fifo_op_e;
+typedef enum { FIFO_WRITE=0, FIFO_READ=1, FIFO_IDLE=2 } fifo_op_e;
 
 class fifo_transaction extends uvm_sequence_item;
 
@@ -6,6 +6,7 @@ class fifo_transaction extends uvm_sequence_item;
 
   rand fifo_op_e   op;
   rand bit [31:0]  wdata;
+  bit [31:0]       rdata;
 
   //constraint c_data { }
 
@@ -27,15 +28,14 @@ class fifo_sequence extends uvm_sequence#(fifo_transaction);
     bit [95:0] three_words;
     three_words = 96'h89abcdef0123456711111111;
     for(int i = 95; i>0; i-=32) begin
-      `uvm_info("SEQ", "Executing fifo_sequence", UVM_HIGH)
+      `uvm_info("SEQ", "Executing fifo_sequence", UVM_MEDIUM)
       req = fifo_transaction::type_id::create("req");
       req.wdata = three_words[i-:32];
       req.op = FIFO_WRITE;
       start_item(req);
       finish_item(req);
-      `uvm_info("SEQ", $sformatf("Sent transaction: %h", req.wdata), UVM_HIGH)
+      `uvm_info("SEQ", $sformatf("Sent transaction: %h", req.wdata), UVM_MEDIUM)
     end
-    req.op = FIFO_IDLE;
   endtask: body
 
 endclass
