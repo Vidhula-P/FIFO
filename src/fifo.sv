@@ -20,14 +20,15 @@ interface fifo_if#(
 
 endinterface
 
+`include "uvm_macros.svh"
+
 module fifo #(
   parameter WIDTH = 32,
   parameter DEPTH = 8
 )(
 	fifo_if.dut fifo_intf
 );
-	//Timescale
-	timeunit 10ns; timeprecision 100ps;
+    import uvm_pkg::*;
 
 	//local parameters and signals
     localparam ADDR_WIDTH = $clog2(DEPTH); //sythesizable since fifo_intf.DEPTH is fixed
@@ -46,7 +47,8 @@ module fifo #(
 			if (fifo_intf.wr_en && !full) begin
 				mem[wptr] <= fifo_intf.wdata;
 				wptr 			<= wptr + 1'b1;
-				$display("Writing %h to %d", fifo_intf.wdata, wptr);
+                `uvm_info("DUT",
+                $sformatf("Writing %h to %d", fifo_intf.wdata, wptr), UVM_MEDIUM)
 			end
 		end
 	end
@@ -59,7 +61,8 @@ module fifo #(
 			if (fifo_intf.rd_en && !empty) begin
 				rptr 	<= rptr + 1'b1; //since non-blocking assign
 				fifo_intf.rdata <= mem[rptr]; 	//old value of rptr is considered
-              $display("Reading %h from %d", fifo_intf.rdata, rptr);
+                `uvm_info("DUT",
+                        $sformatf("Reading %h from %d", fifo_intf.rdata, rptr), UVM_MEDIUM)
 			end
 		end
 	end
