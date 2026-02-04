@@ -1,5 +1,5 @@
-Writing d4f40099 to 0
-Write: d4f40099, empty_flag=0, full_flag=0
+Writing d4f40099 to 0                       // from design code fifo.sv
+Write: d4f40099, empty_flag=0, full_flag=0  // from testbench code fifo_tb.sv
 Writing 281b86c4 to 1
 Write: 281b86c4, empty_flag=0, full_flag=0
 Writing d4f40099 to 2
@@ -15,7 +15,7 @@ Write: d4f40099, empty_flag=0, full_flag=0
 Writing 281b86c4 to 7
 Write: 281b86c4, empty_flag=0, full_flag=1
 Write: babababa, empty_flag=0, full_flag=1
-Read: d4f40099, empty_flag=0, full_flag=0
+Read: d4f40099, empty_flag=0, full_flag=0   // from testbench code fifo_tb.sv
 Read: 281b86c4, empty_flag=0, full_flag=0
 Read: d4f40099, empty_flag=0, full_flag=0
 Read: 281b86c4, empty_flag=0, full_flag=0
@@ -23,6 +23,11 @@ Read: d4f40099, empty_flag=0, full_flag=0
 Read: 281b86c4, empty_flag=0, full_flag=0
 Read: d4f40099, empty_flag=0, full_flag=0
 Read: 281b86c4, empty_flag=1, full_flag=0
-Writing fefefefe to 0
-Read: 281b86c4, empty_flag=0, full_flag=0
-Read: fefefefe, empty_flag=1, full_flag=0
+Writing 76543210 to 0
+Write: 76543210, empty_flag=0, full_flag=0
+Write: ffffffff, empty_flag=1, full_flag=0 // no corresponding display printed in design
+Writing 89abcdef to 0                      // writing to index 0 since reset
+Write: 89abcdef, empty_flag=0, full_flag=0
+Write: 89abcdef, empty_flag=0, full_flag=0
+Read: 89abcdef, empty_flag=1, full_flag=0  // printed before reset
+// no read after reset

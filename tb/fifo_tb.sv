@@ -82,23 +82,42 @@ module fifo_tb;
     rd_en = 1;
     @(posedge clk);
     rd_en = 0;
-		#5
+    @(posedge clk);
 
-		// checking reset
-		rst = 0;
-		#5
-		rst = 1;
-		//write
+
+		//TEST 2 - RESET
+		//write sample data
 		@(posedge clk);
-    wr_en = 1;
-    wdata = 32'hfefefefe;
+    wdata = 32'h76543210;
+    wr_en = 1'b1;
     @(posedge clk);
-    wr_en = 0;
-    //read
+    rst = 0;
+    wdata = {32{1'b1}};
     @(posedge clk);
-    rd_en = 1;
+    rst = 1;
+    wr_en = 1; // wr_en reset
+    wdata = 32'h89ABCDEF;
+		@(posedge clk);
+		wr_en = 1'b0;
+
+    // Read all data
+    for (int i = 0; i < DEPTH; i++) begin
+      @(posedge clk);
+      rd_en = 1;
+    end
     @(posedge clk);
-    //rd_en = 0;
+    rd_en = 0;
+    @(posedge clk);
+    rst = 0;
+    @(posedge clk);
+    // Read data after reset
+    for (int i = 0; i < DEPTH; i++) begin
+      @(posedge clk);
+      rd_en = 1;
+    end
+    @(posedge clk);
+    rd_en = 0;
+    @(posedge clk);
 
 		$finish;
   end
