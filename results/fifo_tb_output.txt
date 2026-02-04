@@ -1,40 +1,18 @@
-Writing d4f40099 to 0
-Write: 281b86c4, empty_flag=0, full_flag=0
-Writing 281b86c4 to 1
-Write: d4f40099, empty_flag=0, full_flag=0
-Writing d4f40099 to 2
-Write: 281b86c4, empty_flag=0, full_flag=0
-Writing 281b86c4 to 3
-Write: d4f40099, empty_flag=0, full_flag=0
-Writing d4f40099 to 4
-Write: 281b86c4, empty_flag=0, full_flag=0
-Writing 281b86c4 to 5
-Write: d4f40099, empty_flag=0, full_flag=0
-Writing d4f40099 to 6
-Write: 281b86c4, empty_flag=0, full_flag=0
-Writing 281b86c4 to 7
-Write: 281b86c4, empty_flag=0, full_flag=1
-Write: babababa, empty_flag=0, full_flag=1
-Reading xxxxxxxx from 0
-Read: d4f40099, empty_flag=0, full_flag=0
-Reading d4f40099 from 1
-Read: 281b86c4, empty_flag=0, full_flag=0
-Reading 281b86c4 from 2
-Read: d4f40099, empty_flag=0, full_flag=0
-Reading d4f40099 from 3
-Read: 281b86c4, empty_flag=0, full_flag=0
-Reading 281b86c4 from 4
-Read: d4f40099, empty_flag=0, full_flag=0
-Reading d4f40099 from 5
-Read: 281b86c4, empty_flag=0, full_flag=0
-Reading 281b86c4 from 6
-Read: d4f40099, empty_flag=0, full_flag=0
-Reading d4f40099 from 7
-Read: 281b86c4, empty_flag=1, full_flag=0
-Writing 76543210 to 0
-Write: ffffffff, empty_flag=1, full_flag=0
-Write: 89abcdef, empty_flag=1, full_flag=0
-Writing 89abcdef to 0
-Write: 89abcdef, empty_flag=0, full_flag=0
-Reading 281b86c4 from 0
-Read: 89abcdef, empty_flag=1, full_flag=0
+Set verbosity as medium-
+
+UVM_INFO @ 0: reporter [RNTST] Running test fifo_test...
+UVM_INFO fifo_monitor.svh(19) @ 0: uvm_test_top.env.agent.monitor [MONITOR] Start Monitor
+UVM_INFO fifo_sequence.svh(31) @ 0: uvm_test_top.env.agent.sequencer@@seq [SEQ] Executing fifo_sequence
+UVM_INFO fifo_monitor.svh(23) @ 20: uvm_test_top.env.agent.monitor [MONITOR] Writing 89abcdef
+UVM_INFO design.sv(51) @ 25: reporter [DUT] Writing 89abcdef to 0
+UVM_INFO fifo_sequence.svh(37) @ 25: uvm_test_top.env.agent.sequencer@@seq [SEQ] Sent transaction: 89abcdef
+UVM_INFO fifo_sequence.svh(31) @ 25: uvm_test_top.env.agent.sequencer@@seq [SEQ] Executing fifo_sequence
+UVM_INFO fifo_monitor.svh(23) @ 30: uvm_test_top.env.agent.monitor [MONITOR] Writing 01234567
+UVM_INFO design.sv(51) @ 35: reporter [DUT] Writing 01234567 to 1
+UVM_INFO fifo_sequence.svh(37) @ 35: uvm_test_top.env.agent.sequencer@@seq [SEQ] Sent transaction: 01234567
+UVM_INFO fifo_sequence.svh(31) @ 35: uvm_test_top.env.agent.sequencer@@seq [SEQ] Executing fifo_sequence
+UVM_INFO fifo_monitor.svh(23) @ 40: uvm_test_top.env.agent.monitor [MONITOR] Writing 11111111
+UVM_INFO design.sv(51) @ 45: reporter [DUT] Writing 11111111 to 2
+UVM_INFO fifo_sequence.svh(37) @ 45: uvm_test_top.env.agent.sequencer@@seq [SEQ] Sent transaction: 11111111
+UVM_INFO /xcelium25.03/tools/methodology/UVM/CDNS-1.2/sv/src/base/uvm_objection.svh(1271) @ 100: reporter [TEST_DONE] 'run' phase is ready to proceed to the 'extract' phase
+UVM_INFO /xcelium25.03/tools/methodology/UVM/CDNS-1.2/sv/src/base/uvm_report_server.svh(851) @ 100: reporter [UVM/REPORT/SERVER] 
