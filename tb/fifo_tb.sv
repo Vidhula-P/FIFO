@@ -63,25 +63,25 @@ module fifo_tb;
 		wr_en = 1'b0;
 
 		// Try writing two more words to test full
-        @(posedge clk);
-        wr_en = 1;
-        wdata = 32'hbabababa;
-        @(posedge clk);
-        wr_en = 0;
+    @(posedge clk);
+    wr_en = 1;
+    wdata = 32'hbabababa;
+    @(posedge clk);
+    wr_en = 0;
 
-        // Read all data
-        for (int i = 0; i < DEPTH; i++) begin
-            @(posedge clk);
-                rd_en = 1;
-        end
-        @(posedge clk);
-        rd_en = 0;
+    // Read all data
+    for (int i = 0; i < DEPTH; i++) begin
+      @(posedge clk);
+      rd_en = 1;
+    end
+    @(posedge clk);
+    rd_en = 0;
 
-        // Try reading one more to test empty
-        @(posedge clk);
-        rd_en = 1;
-        @(posedge clk);
-        rd_en = 0;
+    // Try reading one more to test empty
+    @(posedge clk);
+    rd_en = 1;
+    @(posedge clk);
+    rd_en = 0;
 		#5
 
 		// checking reset
@@ -90,15 +90,15 @@ module fifo_tb;
 		rst = 1;
 		//write
 		@(posedge clk);
-        wr_en = 1;
-        wdata = 32'hfefefefe;
-        @(posedge clk);
-        wr_en = 0;
-            //read
-            @(posedge clk);
-        rd_en = 1;
-        @(posedge clk);
-        //rd_en = 0;
+    wr_en = 1;
+    wdata = 32'hfefefefe;
+    @(posedge clk);
+    wr_en = 0;
+    //read
+    @(posedge clk);
+    rd_en = 1;
+    @(posedge clk);
+    //rd_en = 0;
 
 		$finish;
   end
@@ -106,9 +106,9 @@ module fifo_tb;
   // Monitor
   always @(posedge clk) begin
     if (wr_en && !full_flag) begin
-      $display("Write: %0h, empty_flag=%b, full_flag=%b", wdata, empty_flag, full_flag);
+      $monitor("Write: %0h, empty_flag=%b, full_flag=%b", wdata, empty_flag, full_flag);
     end if (rd_en && !empty_flag) begin
-      $display("Read: %0h, empty_flag=%b, full_flag=%b", rdata, empty_flag, full_flag);
+      $monitor("Read: %0h, empty_flag=%b, full_flag=%b", rdata, empty_flag, full_flag);
     end
   end
 
