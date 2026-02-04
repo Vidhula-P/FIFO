@@ -1,6 +1,6 @@
-class my_driver extends uvm_driver #(my_transaction);
+class fifo_driver extends uvm_driver #(fifo_transaction);
 
-  `uvm_component_utils(my_driver)
+  `uvm_component_utils(fifo_driver)
 
   virtual fifo_if dut_vif;
 
@@ -64,4 +64,4 @@ class my_driver extends uvm_driver #(my_transaction);
     end
   endtask
 
-endclass: my_driver
+endclass

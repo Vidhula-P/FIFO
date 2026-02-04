@@ -1,18 +1,13 @@
-/*******************************************
-This is a basic UVM "Hello World" testbench.
-
-Explanation of this testbench on YouTube:
-https://www.youtube.com/watch?v=Qn6SvG-Kya0
-*******************************************/
+// Adapted from Doulos' sample testbench
 
 `include "uvm_macros.svh"
-`include "my_testbench_pkg.svh"
+`include "fifo_testbench_pkg.svh"
 
 // The top module that contains the DUT and interface.
 // This module starts the test.
 module top;
   import uvm_pkg::*;
-  import my_testbench_pkg::*;
+  import fifo_testbench_pkg::*;
   
   // Instantiate the interface
   fifo_if dut_if1();
@@ -30,7 +25,7 @@ module top;
     // Place the interface into the UVM configuration database
     uvm_config_db#(virtual fifo_if)::set(null, "*", "dut_vif", dut_if1);
     // Start the test
-    run_test("my_test");
+    run_test("fifo_test");
   end
   
   // Dump waves

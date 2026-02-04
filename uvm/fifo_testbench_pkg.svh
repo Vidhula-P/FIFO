@@ -1,27 +1,27 @@
-package my_testbench_pkg;
+package fifo_testbench_pkg;
   import uvm_pkg::*;
   //Timescale
   timeunit 10ns; timeprecision 100ps;
   
   // The UVM sequence, transaction item, and driver are in these files:
-  `include "my_sequence.svh"
-  `include "my_driver.svh"
+  `include "fifo_sequence.svh"
+  `include "fifo_driver.svh"
   
 // The agent contains sequencer, driver, and monitor (yet to be included)
-  class my_agent extends uvm_agent;
-    `uvm_component_utils(my_agent)
+  class fifo_agent extends uvm_agent;
+    `uvm_component_utils(fifo_agent)
     
-    my_driver driver;
-    uvm_sequencer#(my_transaction) sequencer;
+    fifo_driver driver;
+    uvm_sequencer#(fifo_transaction) sequencer;
     
     function new(string name, uvm_component parent);
       super.new(name, parent);
     endfunction
     
     function void build_phase(uvm_phase phase);
-      driver = my_driver ::type_id::create("driver", this);
+      driver = fifo_driver ::type_id::create("driver", this);
       sequencer =
-        uvm_sequencer#(my_transaction)::type_id::create("sequencer", this);
+      uvm_sequencer#(fifo_transaction)::type_id::create("sequencer", this);
     endfunction    
     
     // In UVM connect phase, we connect the sequencer to the driver.
@@ -34,8 +34,8 @@ package my_testbench_pkg;
       // We raise objection to keep the test from completing
       phase.raise_objection(this);
       begin
-        my_sequence seq;
-        seq = my_sequence::type_id::create("seq");
+        fifo_sequence seq;
+        seq = fifo_sequence::type_id::create("seq");
         seq.start(sequencer);
       end
       // We drop objection to allow the test to complete
@@ -45,32 +45,32 @@ package my_testbench_pkg;
 
   endclass
   
-  class my_env extends uvm_env;
-    `uvm_component_utils(my_env)
+  class fifo_env extends uvm_env;
+    `uvm_component_utils(fifo_env)
     
-    my_agent agent;
+    fifo_agent agent;
 
     function new(string name, uvm_component parent);
       super.new(name, parent);
     endfunction
     
     function void build_phase(uvm_phase phase);
-      agent = my_agent::type_id::create("agent", this);
+      agent = fifo_agent::type_id::create("agent", this);
     endfunction
 
   endclass
   
-  class my_test extends uvm_test;
-    `uvm_component_utils(my_test)
+  class fifo_test extends uvm_test;
+    `uvm_component_utils(fifo_test)
     
-    my_env env;
+    fifo_env env;
 
     function new(string name, uvm_component parent);
       super.new(name, parent);
     endfunction
     
     function void build_phase(uvm_phase phase);
-      env = my_env::type_id::create("env", this);
+      env = fifo_env::type_id::create("env", this);
     endfunction
     
     task run_phase(uvm_phase phase);
