@@ -51,6 +51,7 @@ module fifo #(
 			if (rd_en && !empty) begin
 				rptr 	<= rptr + 1'b1; //since non-blocking assign
 				rdata <= mem[rptr]; 	//old value of rptr is considered
+				$display("Reading %h to %d", rdata, rptr);
 			end
 		end
 	end
