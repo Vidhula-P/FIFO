@@ -1,56 +1,115 @@
-// Code your testbench here
-// or browse Examples
-// fifo_tb.sv
-`timescale 1ns / 1ps
-
+//testbench to verify FIFO operation in a modular fashion
 module fifo_tb;
-  parameter WIDTH = 8;
-  parameter DEPTH = 16;
-  parameter PTR_WIDTH = $clog2(DEPTH);
+	timeunit 10ns; timeprecision 100ps;
 
-  reg clk;
-  reg rstn;
-  reg wr_en;
-  reg rd_en;
-  reg [WIDTH-1:0] din;
-  wire [WIDTH-1:0] dout;
-  wire full;
-  wire empty;
+	localparam WIDTH = 32;
+	localparam DEPTH = 8;
 
-  fifo #(WIDTH, DEPTH, PTR_WIDTH) dut (
-    .clk(clk),
-    .rstn(rstn),
-    .wr_en(wr_en),
-    .rd_en(rd_en),
-    .din(din),
-    .dout(dout),
-    .full(full),
-    .empty(empty)
-  );
+	//signals
+	logic clk, rst;
+	logic [WIDTH-1:0] wdata;
+	logic wr_en;
+	logic	full_flag;
+	logic [WIDTH-1:0] rdata;
+	logic rd_en;
+	logic	empty_flag;
 
-  // Clock generation
-  always #5 clk = ~clk; // clock period of 10 ns
+	//instantiating the DUT
+	fifo #(
+		.WIDTH(WIDTH),
+		.DEPTH(DEPTH)
+	) fifo_dut (
+		.clk(clk),
+		.rst(rst),
+		.wdata(wdata),
+		.wr_en(wr_en),
+		.full_flag(full_flag),
+		.rdata(rdata),
+		.rd_en(rd_en),
+		.empty_flag(empty_flag)
+	);
 
-  initial begin
-    $dumpfile("fifo_tb.vcd");      // Name of the waveform dump file
-    $dumpvars(0, fifo_tb);         // Dump all variables in the testbench
+	//clock generation
+	initial clk = 1'b0;
+	always #5 clk = ~clk; // 100 MHz (10 ns time period)
 
-    clk = 1;
-    rstn = 0;
-    wr_en = 0;
-    rd_en = 0;
-    din = 0;
+	//setting reset
+	initial begin
+    $dumpfile("fifo.vcd");
+    $dumpvars(0, fifo_tb);
+		rst   = 1;
+		#5
+		rst   = 0; //reset triggered
+		wr_en = 0;
+		rd_en = 0;
+		wdata = 0;
+		#5
+		rst = 1;
+	end
 
-    #10 rstn = 1; 
+	logic [383:0] sample;
 
-    // Test sequence
-    wr_en = 1; din = 8'hAA; #10; // WRITE @ time = 10 ns
-    wr_en = 0;              #10; // IDLE  @ time = 20 ns
-    rd_en = 1;              #10; // READ  @ time = 30 ns
-    rd_en = 0;
+	initial begin
+    //TEST 1 - SIMPLE CASE
+		sample = 256'hD4F40099281B86C4D4F40099281B86C4D4F40099281B86C4D4F40099281B86C4;
+		@(negedge rst); //wait if reset
+		//write sample data
+		for (int i = 0; i < 256; i+=32) begin
+			@(posedge clk);
+			wdata = sample[(9'd255-i)-:32];
+			wr_en = 1'b1;
+		end
+		@(posedge clk);
+		wr_en = 1'b0;
 
-    // End simulation
-    #20 $finish;
+		// Try writing two more words to test full
+        @(posedge clk);
+        wr_en = 1;
+        wdata = 32'hbabababa;
+        @(posedge clk);
+        wr_en = 0;
+
+        // Read all data
+        for (int i = 0; i < DEPTH; i++) begin
+            @(posedge clk);
+                rd_en = 1;
+        end
+        @(posedge clk);
+        rd_en = 0;
+
+        // Try reading one more to test empty
+        @(posedge clk);
+        rd_en = 1;
+        @(posedge clk);
+        rd_en = 0;
+		#5
+
+		// checking reset
+		rst = 0;
+		#5
+		rst = 1;
+		//write
+		@(posedge clk);
+        wr_en = 1;
+        wdata = 32'hfefefefe;
+        @(posedge clk);
+        wr_en = 0;
+            //read
+            @(posedge clk);
+        rd_en = 1;
+        @(posedge clk);
+        //rd_en = 0;
+
+		$finish;
   end
 
-endmodule
+  // Monitor
+  always @(posedge clk) begin
+    if (wr_en && !full_flag) begin
+      $display("Write: %0h, empty_flag=%b, full_flag=%b", wdata, empty_flag, full_flag);
+    end if (rd_en && !empty_flag) begin
+      $display("Read: %0h, empty_flag=%b, full_flag=%b", rdata, empty_flag, full_flag);
+    end
+  end
+
+endmodule: fifo_tb
